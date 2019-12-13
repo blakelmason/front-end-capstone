@@ -6,7 +6,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node proxy-blake/index.js",
-    "start:dev": "nodemon proxy-blake/index.js"
+    "server:dev": "nodemon proxy-blake/index.js",
+    "client:dev": "webpack -d --watch"
   },
   "repository": {
     "type": "git",
@@ -32,7 +33,8 @@
     "postcss-loader": "^3.0.0",
     "sass-loader": "^8.0.0",
     "style-loader": "^1.0.1",
-    "webpack": "^4.41.2"
+    "webpack": "^4.41.2",
+    "webpack-cli": "^3.3.10"
   },
   "dependencies": {
     "@babel/core": "^7.7.5",

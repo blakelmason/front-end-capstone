@@ -38,15 +38,20 @@ const tasks = {
       execSync(`cd ${service} && git pull`, { stdio: 'inherit' })
       console.log(`\n\n ---------- ${service}  \n\n`)
     })
+    cb()
+  },
+
+  build: function(cb) {
     execSync('webpack -d', { stdio: 'inherit' })
     cb()
   },
 
-  startServices: function(cb) {
+  start: function(cb) {
     const startScripts = []
     services.map(service => startScripts.push(`"cd ${service} && npm start"`))
     let startScript =
       'concurrently ' + startScripts.reduce((a, b) => a + ' ' + b)
+    startScript += ' "npm start" "webpack -d --watch"'
     const child = exec(startScript)
     child.stdout.on('data', data => console.log(data.toString()))
     cb()
@@ -54,5 +59,6 @@ const tasks = {
 }
 
 module.exports = {
-  ...tasks
+  ...tasks,
+  init: series(tasks.clone, tasks.npmI, tasks.build, tasks.start)
 }
