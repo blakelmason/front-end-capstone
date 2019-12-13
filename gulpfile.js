@@ -31,9 +31,11 @@ const tasks = {
   },
 
   pull: function(cb) {
+    execSync('cd proxy-blake && git pull', { stdio: 'inherit' })
+    console.log(`\n\n ---------- proxy ${i + 1}  \n\n`)
     services.forEach((service, i) => {
       execSync(`cd ${service} && git pull`, { stdio: 'inherit' })
-      console.log(`\n\n ---------- ${i + 1}  \n\n`)
+      console.log(`\n\n ---------- ${service}  \n\n`)
     })
     execSync('webpack -d', { stdio: 'inherit' })
     cb()
