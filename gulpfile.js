@@ -10,6 +10,7 @@ const services = [
 
 const tasks = {
   clone: function(cb) {
+    exec(`git clone https://github.com/objectobject-hr/proxy-blake.git`)
     services.forEach(service =>
       exec(`git clone https://github.com/objectobject-hr/${service}.git`)
     )
