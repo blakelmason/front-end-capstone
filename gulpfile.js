@@ -8,29 +8,48 @@ const services = [
   'service-blake'
 ]
 
-function clone(cb) {
-  services.forEach(service =>
-    exec(`git clone https://github.com/objectobject-hr/${service}.git`)
-  )
-  cb()
-}
+const tasks = {
+  clone: function(cb) {
+    services.forEach(service =>
+      exec(`git clone https://github.com/objectobject-hr/${service}.git`)
+    )
+    cb()
+  },
 
-function npmI(cb) {
-  services.forEach(service =>
-    execSync(`cd ${service} && npm i`, { stdio: 'inherit' })
-  )
-  cb()
-}
+  npmI: function(cb) {
+    services.forEach(service =>
+      execSync(`cd ${service} && npm i`, { stdio: 'inherit' })
+    )
+    cb()
+  },
 
-function fix(cb) {
-  services.forEach(service =>
-    execSync(`cd ${service} && npm audit fix`, { stdio: 'inherit' })
-  )
-  cb()
+  fix: function(cb) {
+    services.forEach(service =>
+      execSync(`cd ${service} && npm audit fix`, { stdio: 'inherit' })
+    )
+    cb()
+  },
+
+  pull: function(cb) {
+    services.forEach((service, i) => {
+      execSync(`cd ${service} && git pull`, { stdio: 'inherit' })
+      console.log(`\n\n ---------- ${i + 1}  \n\n`)
+    })
+    execSync('webpack -d', { stdio: 'inherit' })
+    cb()
+  },
+
+  startServices: function(cb) {
+    const startScripts = []
+    services.map(service => startScripts.push(`"cd ${service} && npm start"`))
+    let startScript =
+      'concurrently ' + startScripts.reduce((a, b) => a + ' ' + b)
+    const child = exec(startScript)
+    child.stdout.on('data', data => console.log(data.toString()))
+    cb()
+  }
 }
 
 module.exports = {
-  clone,
-  npmI,
-  fix
+  ...tasks
 }

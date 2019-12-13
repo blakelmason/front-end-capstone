@@ -6,9 +6,9 @@ function servicePath(folder, index) {
 }
 
 const services = {
-  blake: servicePath('service-blake', 'index.js'),
   steven: servicePath('searchbar-service', 'index.jsx'),
   david: servicePath('David-service', 'index.jsx'),
+  blake: servicePath('service-blake', 'index.js'),
   aaron: servicePath('service-aaron', 'index.jsx')
 }
 
