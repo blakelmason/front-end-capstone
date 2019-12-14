@@ -1,5 +1,5 @@
 const { series } = require('gulp')
-const { execSync, exec } = require('child_process')
+const { execSync, spawnSync, exec } = require('child_process')
 
 const services = [
   'service-aaron',
@@ -55,10 +55,30 @@ const tasks = {
     const child = exec(startScript)
     child.stdout.on('data', data => console.log(data.toString()))
     cb()
+  },
+
+  seed: function(cb) {
+    const seeds = [
+      'David-service/database/seed.js',
+      'service-blake/db/seed.js',
+      'service-aaron/database/seed.js'
+    ]
+
+    console.log('\n\n')
+
+    seeds.map(seed => {
+      const child = spawnSync(`node ${seed}`, {
+        shell: true
+      })
+      console.log(child.stdout.toString())
+      console.log('\n\n----------\n\n')
+    })
+
+    cb()
   }
 }
 
 module.exports = {
   ...tasks,
-  init: series(tasks.clone, tasks.npmI, tasks.build, tasks.start)
+  init: series(tasks.clone, tasks.npmI, tasks.seed, tasks.build, tasks.start)
 }
