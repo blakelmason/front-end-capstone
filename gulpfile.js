@@ -32,6 +32,7 @@ const tasks = {
   },
 
   pull: function(cb) {
+    execSync('git pull', { stdio: 'inherit' })
     execSync('cd proxy-blake && git pull', { stdio: 'inherit' })
     console.log(`\n\n ---------- proxy ${'proxy'}  \n\n`)
     services.forEach((service, i) => {
@@ -47,6 +48,17 @@ const tasks = {
   },
 
   start: function(cb) {
+    const startScripts = []
+    services.map(service => startScripts.push(`"cd ${service} && npm start"`))
+    let startScript =
+      'concurrently ' + startScripts.reduce((a, b) => a + ' ' + b)
+    startScript += ' "npm start" "webpack -d"'
+    const child = exec(startScript)
+    child.stdout.on('data', data => console.log(data.toString()))
+    cb()
+  },
+
+  dev: function(cb) {
     const startScripts = []
     services.map(service => startScripts.push(`"cd ${service} && npm start"`))
     let startScript =
