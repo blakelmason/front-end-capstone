@@ -18,6 +18,7 @@ const tasks = {
   },
 
   npmI: function(cb) {
+    execSync('npm i', { stdio: 'inherit' })
     services.forEach(service =>
       execSync(`cd ${service} && npm i`, { stdio: 'inherit' })
     )
