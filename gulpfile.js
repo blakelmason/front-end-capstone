@@ -11,12 +11,18 @@ const services = [
 const tasks = {
   clone: function(cb) {
     const child = spawn(
-      `git clone https://github.com/objectobject-hr/proxy-blake.git`
+      `git clone https://github.com/objectobject-hr/proxy-blake.git`,
+      { shell: true }
     )
+    child.on('error', err => console.error(err))
     child.stdout.on('data', data => console.log(data))
-    services.forEach(service =>
-      spawn(`git clone https://github.com/objectobject-hr/${service}.git`)
-    )
+    services.forEach(service => {
+      const child = spawn(
+        `git clone https://github.com/objectobject-hr/${service}.git`,
+        { shell: true }
+      )
+      child.on('error', err => console.error(err))
+    })
     cb()
   },
 
