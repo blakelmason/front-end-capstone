@@ -1,5 +1,5 @@
 const { series } = require('gulp')
-const { execSync, spawnSync, exec } = require('child_process')
+const { execSync, spawnSync, spawn, exec } = require('child_process')
 
 const services = [
   'service-aaron',
@@ -10,19 +10,41 @@ const services = [
 
 const tasks = {
   clone: function(cb) {
-    exec(`git clone https://github.com/objectobject-hr/proxy-blake.git`)
+    const child = spawn(
+      `git clone https://github.com/objectobject-hr/proxy-blake.git`
+    )
+    child.stdout.on('data', data => console.log(data))
     services.forEach(service =>
-      exec(`git clone https://github.com/objectobject-hr/${service}.git`)
+      spawn(`git clone https://github.com/objectobject-hr/${service}.git`)
     )
     cb()
   },
 
   npmI: function(cb) {
-    execSync('npm i', { stdio: 'inherit' })
-    services.forEach(service =>
-      execSync(`cd ${service} && npm i`, { stdio: 'inherit' })
+    const folders = [...services]
+    const promises = []
+    console.log('\n----------')
+    promises.push(childPromise('npm i', 'front-end-capstone'))
+    folders.forEach(folder =>
+      promises.push(childPromise(`cd ${folder} && npm i`, folder))
     )
-    cb()
+    console.log('----------')
+    Promise.all(promises).then(() => cb())
+
+    function childPromise(command, folder) {
+      return new Promise((resolve, reject) => {
+        console.log(`\ninstalling packages for ${folder} . . .\n`)
+        const child = spawn(command, { shell: true })
+        child.on('error', err => {
+          console.error(err)
+          reject()
+        })
+        child.on('close', () => {
+          console.log(`\n${folder} finished installing packages\n`)
+          resolve()
+        })
+      })
+    }
   },
 
   fix: function(cb) {
